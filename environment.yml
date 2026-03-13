@@ -1,0 +1,16 @@
+name: gravis_env
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python>=3.9
+  - pandas
+  - numpy
+  - scipy
+  - matplotlib
+  - openpyxl
+  - rasterio
+  - rioxarray
+  - pyproj
+  - pygmt
+  - tk
