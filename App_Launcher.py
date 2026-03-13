@@ -158,11 +158,9 @@ class GravityGUI:
         canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 
-        # NAMA APLIKASI DI HEADER PANEL KIRI
         ttk.Label(scrollable_frame, text="GRAVIS Pipeline", font=("Arial", 16, "bold"), foreground="#2c3e50").pack(pady=(10, 0))
         ttk.Label(scrollable_frame, text="Gravity Reduction And Visualization System", font=("Arial", 10, "italic"), foreground="#34495e").pack(pady=(0, 5))
 
-        # CREDITS WATERMARK (DIPINDAH KE ATAS)
         ttk.Label(scrollable_frame, text="Developed by:", font=("Arial", 9)).pack(pady=(5, 0))
         ttk.Label(scrollable_frame, text="Rayhan Irfan Hielmy", font=("Arial", 11, "bold"), foreground="#2980b9").pack()
         ttk.Label(scrollable_frame, text="© 2026 | Indonesia", font=("Arial", 9, "italic")).pack(pady=(0, 15))
@@ -231,7 +229,6 @@ class GravityGUI:
         self.status = tk.StringVar(value="Status: Ready.")
         ttk.Label(scrollable_frame, textvariable=self.status, foreground="blue", font=("Arial", 10, "italic")).pack(pady=10)
 
-        # ====== PANEL KANAN ======
         right_paned = ttk.PanedWindow(main_paned, orient=tk.VERTICAL)
         main_paned.add(right_paned, weight=3)
         
