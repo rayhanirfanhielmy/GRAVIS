@@ -38,7 +38,6 @@ def register_plot(fname):
     with open(PLOTS_LIST_FILE, 'a') as f: f.write(fname + '\n')
 
 def save_tif(xi, yi, zi, title):
-    # Menyimpan file TIF ke folder output_tif
     clean_title = title.replace(" ", "_").replace("(", "").replace(")", "").replace("/", "_").replace(":", "")
     fname = os.path.join(DIR_TIF, f"{clean_title}.tif")
     pixel_width = (xi.max() - xi.min()) / (xi.shape[1] - 1)
