@@ -23,7 +23,7 @@ Because GRAVIS relies on robust geospatial libraries like `PyGMT` and `Rasterio`
 
 1. **Clone this repository:**
    ```bash
-   git clone [https://github.com/rayhanirfanhielmy/GRAVIS.git](https://github.com/rayhanirfanhielmy/GRAVIS.git)
+   git clone https://github.com/rayhanirfanhielmy/GRAVIS.git
    cd GRAVIS
    ```
 
