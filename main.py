@@ -184,12 +184,30 @@ def run_sba(input_faa_utm, rho, res):
     save_map(xi, yi, zi, f'Simple Bouguer Anomaly (Rho={rho})', 'mGal')
 
 def run_cba(input_sba, rho, res):
+    print(f"Calculating CBA using Density: {rho}")
+    
     # Membaca file DEM dari folder TIF
     dem_file = os.path.join(DIR_TIF, "DEM_UTM.tif")
     if not os.path.exists(dem_file): raise FileNotFoundError("DEM_UTM.tif not found in output_tif folder.")
+    
     df = pd.read_excel(input_sba)
     headers = list(df.columns) + ["Center_Elevation"]
-    config = {16.64208: 72, 53.34: 72, 170.078: 72}
+    
+    config = {
+        16.6: 6,      # Zona B
+        53.3: 6,      # Zona C
+        170.1: 8,     # Zona D
+        390.1: 12,    # Zona E
+        894.9: 16,    # Zona F
+        1529.6: 24,   # Zona G
+        2614.4: 36,   # Zona H
+        4468.9: 48,   # Zona I
+        6565.4: 60,   # Zona J
+        9901.8: 72   # Zona K
+        #14742.6: 90,  # Zona L use if you need
+        #21943.4: 120  # Zona M
+    }
+    
     dx_list, dy_list = [], []
     for rad, num in config.items():
         for ang in np.linspace(0, 360, num, endpoint=False):
@@ -200,37 +218,50 @@ def run_cba(input_sba, rho, res):
     coords = []
     for _, row in df.iterrows():
         coords.append((row["UTMX"], row["UTMY"]))
-        for dx, dy in zip(dx_list, dy_list): coords.append((row["UTMX"] + dx, row["UTMY"] + dy))
+        for dx, dy in zip(dx_list, dy_list): 
+            coords.append((row["UTMX"] + dx, row["UTMY"] + dy))
         
     elevs = []
-    print("Extracting terrain heights...")
+    print("Extracting terrain heights... ")
     with rasterio.open(dem_file) as dem:
-        for val in dem.sample(coords): elevs.append(round(float(val[0]), 2))
+        for val in dem.sample(coords): 
+            elevs.append(round(float(val[0]), 2))
     
     elevs_reshaped = np.array(elevs).reshape(len(df), 1 + len(dx_list))
     df_elevs = pd.DataFrame(elevs_reshaped, columns=headers[len(df.columns):])
     df_final = pd.concat([df, df_elevs], axis=1)
     
     G_RHO = 2 * np.pi * 6.6743e-11 * (rho * 1000) / 100000
-    tc_total, r_in = np.zeros(len(df_final)), 0.0
-    for zone in [{"r_out": 16.64208, "n": 6}, {"r_out": 53.34, "n": 6}, {"r_out": 170.078, "n": 8}]:
-        cols = [c for c in df_final.columns if c.startswith(f"{zone['r_out']}m_")]
-        comp_avg = df_final[cols].values.reshape(len(df_final), zone['n'], len(cols)//zone['n']).mean(axis=2)
-        for i in range(zone['n']):
-            z_diff = np.abs(comp_avg[:, i] - df_final['Center_Elevation'])
-            tc_val = (G_RHO / zone['n']) * (zone['r_out'] - r_in + np.sqrt(r_in**2 + z_diff**2) - np.sqrt(zone['r_out']**2 + z_diff**2)) * 1e10
-            tc_total += tc_val
-        r_in = zone['r_out']
-        print(f"   -> Zone {zone['r_out']}m processed.")
+    tc_total = np.zeros(len(df_final))
+    r_in = 0.0
+    
+    print("Calculating Terrain Correction (Hammer Method)...")
+    for r_out, n in config.items():
+        cols = [c for c in df_final.columns if c.startswith(f"{r_out}m_")]
+        
+        tc_zone = np.zeros(len(df_final))
+        
+        for col in cols:
+            z_diff = np.abs(df_final[col] - df_final['Center_Elevation'])
+            
+            tc_sector = (G_RHO / n) * (r_out - r_in + np.sqrt(r_in**2 + z_diff**2) - np.sqrt(r_out**2 + z_diff**2)) * 1e10
+            tc_zone += tc_sector
+            
+        tc_total += tc_zone
+        r_in = r_out
+        print(f"   -> Zone {r_out}m processed.")
         
     df_final['Total_TC'] = tc_total
     df_final['CBA'] = df_final['SBA'] + df_final['Total_TC']
+    
     cba_cols = ['Longitude', 'Latitude', 'UTMX', 'UTMY', 'Center_Elevation', 'FAA', 'SBA', 'Total_TC', 'CBA']
     df_final[cba_cols].to_excel(os.path.join(DIR_RES, 'CBA.xlsx'), index=False)
     
+    print("Gridding and saving CBA map...")
     xi, yi, zi = grid_data(df_final['UTMX'], df_final['UTMY'], df_final['CBA'], res)
     save_map(xi, yi, zi, 'Complete Bouguer Anomaly (CBA)', 'mGal')
-
+    print("CBA processing complete!")
+    
 def run_filters(input_file, res, poly_order, window):
     print(f"Processing Filters on: {input_file}")
     df = pd.read_excel(input_file)
