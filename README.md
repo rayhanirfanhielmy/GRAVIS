@@ -52,8 +52,28 @@ GRAVIS automatically organizes your processed data into three clean directories:
 * `output_tif/`: Contains all georeferenced raster grids (`.tif`) ready for QGIS/ArcGIS.
 
 ## 📜 Citation
+
+**Note:** This paper has been officially accepted and is scheduled for publication in February 2027.
+
 If you use GRAVIS in your research, please cite the following paper:
-> **
+
+> Hielmy, R. I., Syirojudin, M., Setiawan, Y., & Yusuf, M. (2027). Design and Performance Testing of GRAVIS: An Integrated Python-Based Software for Gravity Data Processing. *Jurnal Ilmu Komputer dan Informasi (Journal of Computer Science and Information)*, *20*(1), 53-66. https://doi.org/10.21609/jiki.v20i1.1893 *(In Press)*
+
+**BibTeX:**
+
+```bibtex
+@article{hielmy2027gravis,
+  title={Design and Performance Testing of GRAVIS: An Integrated Python-Based Software for Gravity Data Processing},
+  author={Hielmy, Rayhan Irfan and Syirojudin, Muhammad and Setiawan, Yosi and Yusuf, Mahmud},
+  journal={Jurnal Ilmu Komputer dan Informasi (Journal of Computer Science and Information)},
+  volume={20},
+  number={1},
+  pages={53--66},
+  year={2027},
+  note={Accepted, to appear in February 2027},
+  doi={10.21609/jiki.v20i1.1893},
+  url={[http://dx.doi.org/10.21609/jiki.v20i1.1893](http://dx.doi.org/10.21609/jiki.v20i1.1893)}
+}
 
 ## ⚖️ License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
